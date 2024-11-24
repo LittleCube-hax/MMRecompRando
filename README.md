@@ -39,6 +39,10 @@ Make sure you have a file named "apconnect.txt" (without the quotes) in the same
 
 Try moving your cursor to the Letter to Kafei and pressing the N64's L button. That should cycle through all quest items in that slot. That's true for the Moon's Tear item slot and the Room Key item slot as well.
 
+### Why are the checks in X location not randomized / not giving me anything?
+
+Only Clock Town, Termina Field, and the Southern Swamp are currently implemented. All other locations are W.I.P.
+
 ## Writing mods
 See [this document](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg) for an explanation of the modding framework, including how to write function patches and perform interop between different mods.
 
