@@ -22,6 +22,8 @@ void Sram_ClearHighscores(void);
 void Sram_GenerateRandomSaveFields(void);
 void Sram_ResetSave(void);
 
+bool drankChateau = false;
+
 void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_15_20);
     SET_WEEKEVENTREG(WEEKEVENTREG_59_04);
@@ -79,6 +81,12 @@ void Sram_SetInitialWeekEvents(void) {
 
     // skip the princess prison cutscene
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
+
+    // restore chateau romani state after cycle reset
+    if(drankChateau) {
+        SET_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
+        drankChateau = false;
+    }
 }
 
 RECOMP_PATCH void Sram_InitDebugSave(void) {
@@ -93,6 +101,19 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
 
     gSaveContext.save.hasTatl = true;
+
+    // TODO: move below to YAML options
+    // start with basic consumables
+    gSaveContext.save.saveInfo.playerData.rupees = 99;
+    gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_STICK] = ITEM_DEKU_STICK;
+    gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_STICK] = 10;
+    gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_NUT] = ITEM_DEKU_NUT;
+    gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_NUT] = 20;
+
+    gSaveContext.save.timeSpeedOffset = -2;
+
+    // TODO: hide song on quest screen + add playback text
+    SET_QUEST_ITEM(ITEM_SONG_SUN + QUEST_SONG_SUN);
 
     gSaveContext.save.saveInfo.horseData.sceneId = SCENE_F01;
     gSaveContext.save.saveInfo.horseData.pos.x = -1420;
@@ -294,7 +315,7 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
     s32 i;
     u8 item;
 
-    gSaveContext.save.timeSpeedOffset = 0;
+    // gSaveContext.save.timeSpeedOffset = 0;
     gSaveContext.save.eventDayCount = 0;
     gSaveContext.save.day = 0;
     gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
@@ -342,6 +363,9 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_84_20)) {
         //Inventory_DeleteItem(ITEM_MASK_FIERCE_DEITY, SLOT(ITEM_MASK_FIERCE_DEITY));
     }
+
+    // persistent chateau romani state
+    drankChateau = CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
 
     for (i = 0; i < ARRAY_COUNT(sPersistentCycleWeekEventRegs); i++) {
         u16 isPersistentBits = sPersistentCycleWeekEventRegs[i];
