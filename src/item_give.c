@@ -1951,9 +1951,11 @@ u8 randoItemGive(u32 gi) {
             return ITEM_NONE;
         } else if (CUR_UPG_VALUE(UPG_WALLET) == 1) {
             Inventory_ChangeUpgrade(UPG_WALLET, 2);
+            Rupees_ChangeBy(500);
             return ITEM_NONE;
         }
         Inventory_ChangeUpgrade(UPG_WALLET, 1);
+        Rupees_ChangeBy(200);
         return ITEM_NONE;
 
     } else if (item == ITEM_DEKU_STICK_UPGRADE_20) {
