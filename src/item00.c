@@ -11,6 +11,8 @@
 
 #define LOCATION_HEART_PIECE ((0x050000) | (sceneId << 8) | this->collectibleFlag)
 
+#define ITEM00_BOMBCHU 0x1E
+
 #define ENITEM00_GET_8000(thisx) ((thisx)->params & 0x8000)
 #define ENITEM00_GET_7F00(thisx) (((thisx)->params & 0x7F00) >> 8)
 
@@ -169,6 +171,7 @@ RECOMP_PATCH void EnItem00_Init(Actor* thisx, PlayState* play) {
         case ITEM00_MAGIC_JAR_SMALL:
         case ITEM00_DEKU_NUTS_10:
         case ITEM00_BOMBS_0:
+        case ITEM00_BOMBCHU:
             Actor_SetScale(thisx, 0.03f);
             this->unk154 = 0.03f;
             shadowOffset = 320.0f;
@@ -275,6 +278,10 @@ RECOMP_PATCH void EnItem00_Init(Actor* thisx, PlayState* play) {
         case ITEM00_BOMBS_A:
         case ITEM00_BOMBS_B:
             Item_Give(play, ITEM_BOMBS_5);
+            break;
+
+        case ITEM00_BOMBCHU:
+            Item_Give(play, ITEM_BOMBCHUS_5);
             break;
 
         case ITEM00_ARROWS_10:
@@ -439,6 +446,10 @@ RECOMP_PATCH void EnItem00_Update(Actor* thisx, PlayState* play) {
         case ITEM00_BOMBS_A:
         case ITEM00_BOMBS_B:
             Item_Give(play, ITEM_BOMBS_5);
+            break;
+
+        case ITEM00_BOMBCHU:
+            Item_Give(play, ITEM_BOMBCHUS_5);
             break;
 
         case ITEM00_ARROWS_10:
@@ -657,6 +668,7 @@ RECOMP_PATCH void EnItem00_Draw(Actor* thisx, PlayState* play) {
             case ITEM00_SMALL_KEY:
             case ITEM00_DEKU_NUTS_10:
             case ITEM00_BOMBS_0:
+            case ITEM00_BOMBCHU:
                 EnItem00_DrawSprite(this, play);
                 break;
 
@@ -788,7 +800,7 @@ RECOMP_PATCH void func_800A6780(EnItem00* this, PlayState* play) {
     if (this->actor.params <= ITEM00_RUPEE_RED) {
         this->actor.shape.rot.y += 0x3C0;
     } else if ((this->actor.params >= ITEM00_SHIELD_HERO) && (this->actor.params != ITEM00_DEKU_NUTS_10) &&
-               (this->actor.params != ITEM00_BOMBS_0)) {
+               (this->actor.params != ITEM00_BOMBS_0) && (this->actor.params != ITEM00_BOMBCHU)) {
         this->actor.world.rot.x -= 0x2BC;
         this->actor.shape.rot.y += 0x190;
         this->actor.shape.rot.x = this->actor.world.rot.x - 0x4000;
