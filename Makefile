@@ -3,8 +3,8 @@ LIB_DIRS := lib
 OUTPUT_NAME := mm_recomp_rando
 MOD_TOML := mod.toml
 
-CC      := clang
-LD      := ld.lld
+CC      ?= clang
+LD      ?= ld.lld
 MOD_TOOL := ./RecompModTool
 OFFLINE_RECOMP := ./OfflineModRecomp
 TARGET  := $(BUILD_DIR)/mod.elf
@@ -53,7 +53,15 @@ define make_folder
 	mkdir -p $(1)
 endef
 
-$(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER).so: build/mod_recompiled.c
+ifeq ($(shell uname),Darwin)
+	LIB_SUFFIX := .dylib
+	ARCH_FLAGS := -arch x86_64 -arch arm64
+else
+	LIB_SUFFIX := .so
+	ARCH_FLAGS :=
+endif
+
+$(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER)$(LIB_SUFFIX): build/mod_recompiled.c
 ifeq ($(MANIFEST),)
 	@$(MAKE) offline --no-print-directory
 else
@@ -61,9 +69,9 @@ else
 endif
 
 endlib:
-	clang build/mod_recompiled.c -Wno-macro-redefined -shared -fvisibility=hidden -fPIC -O2 -Ioffline_build -o $(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER).so
+	clang build/mod_recompiled.c -Wno-macro-redefined -shared -fvisibility=hidden -fPIC -O2 -Ioffline_build $(ARCH_FLAGS) -o $(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER)$(LIB_SUFFIX)
 
-offline: $(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER).so
+offline: $(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER)$(LIB_SUFFIX)
 
 endif
 
