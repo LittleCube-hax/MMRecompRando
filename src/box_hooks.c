@@ -424,6 +424,7 @@ RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
                     gSPDisplayList((*gfx)++, &heartChestBaseDL);
                     return;
                 case GI_TRUE_SKULL_TOKEN:
+                case GI_OCEAN_SKULL_TOKEN:
                     gSPDisplayList((*gfx)++, &spiderChestBaseDL);
                     return;
                 case GI_KEY_BOSS:
@@ -460,6 +461,7 @@ RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
                     gSPDisplayList((*gfx)++, &heartChestLidDL);
                     return;
                 case GI_TRUE_SKULL_TOKEN:
+                case GI_OCEAN_SKULL_TOKEN:
                     gSPDisplayList((*gfx)++, &spiderChestLidDL);
                     return;
                 case GI_KEY_BOSS:

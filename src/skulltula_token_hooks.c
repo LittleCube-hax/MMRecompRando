@@ -8,7 +8,9 @@ RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
 #define ENSI_GET_CHEST_FLAG(thisx) (((thisx)->params & 0xFC) >> 2)
 
 #define LOCATION_SKULL_TOKEN (0x060000 | (play->sceneId << 8) | ENSI_GET_CHEST_FLAG(&this->actor))
-#define GET_GI_TOKEN ((rando_skulltulas_enabled()) ? rando_get_item_id(LOCATION_SKULL_TOKEN) : GI_TRUE_SKULL_TOKEN)
+#define GET_GI_TOKEN ((play->sceneId == SCENE_KINSTA1) ? GET_GI_SWAMP_TOKEN : GET_GI_OCEAN_TOKEN)
+#define GET_GI_SWAMP_TOKEN ((rando_skulltulas_enabled()) ? rando_get_item_id(LOCATION_SKULL_TOKEN) : GI_TRUE_SKULL_TOKEN)
+#define GET_GI_OCEAN_TOKEN ((rando_skulltulas_enabled()) ? rando_get_item_id(LOCATION_SKULL_TOKEN) : GI_OCEAN_SKULL_TOKEN)
 
 #define SPIDER_HOUSE_TOKENS_REQUIRED 30
 
@@ -118,6 +120,7 @@ RECOMP_PATCH void EnSi_GiveToken(EnSi* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 chestFlag = ENSI_GET_CHEST_FLAG(&this->actor);
     u8 swamp_token_count = (rando_skulltulas_enabled() ? rando_has_item(GI_TRUE_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x27));
+    u8 ocean_token_count = (rando_skulltulas_enabled() ? rando_has_item(GI_OCEAN_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x28));
 
     if ((chestFlag < 0x20) && (chestFlag >= 0)) {
         Flags_SetTreasure(play, chestFlag);
@@ -128,15 +131,19 @@ RECOMP_PATCH void EnSi_GiveToken(EnSi* this, PlayState* play) {
     recomp_printf("token location: 0x%06X\n", LOCATION_SKULL_TOKEN);
     rando_send_location(LOCATION_SKULL_TOKEN);
     if (!rando_skulltulas_enabled()) {
-        randoItemGive(GI_TRUE_SKULL_TOKEN);
+        randoItemGive(GET_GI_TOKEN);
     }
 
     if (tokenPrevGI[chestFlag] == GI_TRUE_SKULL_TOKEN) {
         while (swamp_token_count == (rando_skulltulas_enabled() ? rando_has_item(GI_TRUE_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x27)));
     }
+    if (tokenPrevGI[chestFlag] == GI_OCEAN_SKULL_TOKEN) {
+        while (ocean_token_count == (rando_skulltulas_enabled() ? rando_has_item(GI_OCEAN_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x28)));
+    }
 
     Message_StartTextbox(play, getTextId(tokenPrevGI[chestFlag]), NULL);
-    if (Inventory_GetSkullTokenCount(0x27) >= SPIDER_HOUSE_TOKENS_REQUIRED) {
+    if ((tokenPrevGI[chestFlag] == GI_TRUE_SKULL_TOKEN && Inventory_GetSkullTokenCount(0x27) >= SPIDER_HOUSE_TOKENS_REQUIRED)
+        || (tokenPrevGI[chestFlag] == GI_OCEAN_SKULL_TOKEN && Inventory_GetSkullTokenCount(0x28) >= SPIDER_HOUSE_TOKENS_REQUIRED)) {
         Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
     } else {
         Audio_PlayFanfare(NA_BGM_GET_SMALL_ITEM);

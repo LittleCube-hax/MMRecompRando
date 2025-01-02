@@ -1783,6 +1783,8 @@ u8 randoItemGive(u32 gi) {
     u8 item;
     u8 dungeonIndex;
     s16 old_health;
+    u32 giMasked = gi & 0xFFFFFF;
+    recomp_printf("= randoItemGive = GI: 0x%08X\n", gi);
 
     switch (gi & 0xFF0000) {
         case 0x010000:
@@ -1845,7 +1847,7 @@ u8 randoItemGive(u32 gi) {
             if (gi == 0) {
                 return ITEM_NONE;
             }
-            if (gi == GI_TRUE_SKULL_TOKEN) {
+            if (giMasked == GI_TRUE_SKULL_TOKEN || giMasked == GI_OCEAN_SKULL_TOKEN) {
                 item = ITEM_SKULL_TOKEN;
                 break;
             }
@@ -1862,7 +1864,7 @@ u8 randoItemGive(u32 gi) {
         //! @bug: Sets QUEST_QUIVER instead of QUEST_SKULL_TOKEN
         // Setting `QUEST_SKULL_TOKEN` will result in misplaced digits on the pause menu - Quest Status page.
         SET_QUEST_ITEM(item - ITEM_SKULL_TOKEN + QUEST_QUIVER);
-        Inventory_IncrementSkullTokenCount(0x27);
+        Inventory_IncrementSkullTokenCount(giMasked == GI_OCEAN_SKULL_TOKEN ? SCENE_KINDAN2 : SCENE_KINSTA1);
         return ITEM_NONE;
 
     } else if (item == ITEM_DEED_LAND) {

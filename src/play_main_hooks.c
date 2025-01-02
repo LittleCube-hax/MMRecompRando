@@ -344,7 +344,7 @@ void update_rando(PlayState* play) {
                 randoItemGive(GI_BOMBCHUS_20);
             }
 
-            gSaveContext.save.saveInfo.skullTokenCount &= 0xFFFF;
+            // gSaveContext.save.saveInfo.skullTokenCount &= 0xFFFF;
             gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_TRUE_SKULL_TOKEN) << 0x10;
             gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_OCEAN_SKULL_TOKEN);
 
@@ -367,6 +367,7 @@ void update_rando(PlayState* play) {
                         case GI_POTION_RED_BOTTLE:
                         case GI_CHATEAU_BOTTLE:
                         case GI_TRUE_SKULL_TOKEN:
+                        case GI_OCEAN_SKULL_TOKEN:
                             continue;
                     }
                     if (gi == GI_HEART_CONTAINER || gi == GI_HEART_PIECE) {
